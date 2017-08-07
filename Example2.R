@@ -139,3 +139,7 @@ cat("\tTime:\n")
 print(tm3)
 cat('\tclass(scores_perm_3):',class(scores_perm_3),'\n')
 cat('\tdim(scores_perm_3):',dim(scores_perm_3),'\n') 
+
+cat('All equal: \n')
+cat(all.equal(scores_perm_2,scores_perm_3),'\n')
+
