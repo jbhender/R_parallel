@@ -2,7 +2,7 @@
 
 This repository contains material for a workshop presented August 9, 2017.
 The workshop is sponsored by Consulting for Statistics Computing and Analytics Research 
-<a href='http://cscar.research.umich.edu/'>(CSCAR)<\a>
+<a href='http://cscar.research.umich.edu/'>(CSCAR)</a>
 at the University of Michigan. 
 
 ## Overview 
