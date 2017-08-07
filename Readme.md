@@ -34,7 +34,12 @@ case R, to run multiple threads simultaneously in order to reduce the 'walltime'
 completion. 
 
 In R, this can be done using the __parallel__ package distributed in the base distribution since
-version 2.14.0. We will
+version 2.14.0. By default, the __parallel__ package achieves parallelism by 
+<a href="https://en.wikipedia.org/wiki/Fork_(system_call)">forking</a> which is only 
+available on Unix-like operating systems, i.e. Linux and Mac, but not Windows. In the image below,
+we see a parent process with three forked children.  
+
+Image Here 
 
 ### Multicore servers at UM
 Long running computations are also commonly run on specialized, multiuser servers. For instance,
@@ -46,18 +51,73 @@ here at UM researchers have access to the Statistics & Computation Service
 ssh luigi.dsc.umich.edu
 ```
 
+### Using mclapply 
+In R, "apply" statements iterate over a data-structure **applying** a function to each subset, i.e. 
+row, column, item in list, etc., sometimes leading to efficiencies over explicit "for" loops.
+The **lapply** function is used to iterate over a list and **mclapply** splits these iterations into
+multiple processes.  Parallelizing sequential code with **mclapply** generally involves:
+
+  + Loading the **parallel** package with `library(parallel)`,
+  + Writing a function (or functional) to handle each case,
+  + Calling `mclapply` with appropriate options.
+
+```
+library(parallel)
+myFunc = function(case) {
+ # ... do something with case ...
+ return(case_result)
+}
+
+# when inputs to myFunc are defined relatively by case 
+results = mclapply(1:nCases,myFunc)
+
+# or
+
+# when myList has data/parameters that are specific to each case
+results = mclapply(myList,myFunc)
+```
+
+### Running Example - Gene Set Enrichment Analysis
+
+As a running example, we will consider permutation tests for gene set enrichment analysis.
+Such analyses are used to understand large-scale sequencing experiments in terms of sets of functionally
+related and possibly differentially expressed genes. For data we will use a cohort of Triple Negative Breast Cancers
+consisting of two racial groups, African Americans (AA) and American of European ancestry (EA). The data come from:
+<a href=''>here</a> and is named `YaleTNBC.Rdata' in this repository. 
+
+At a high level, the basic steps of the analysis are:
+
+ + **Gene scores**: score each gene using a univariate statistic  (we'll use the t-statistic),
+ + **Set scores**: compose the statistics for all genes in a set (we will sum them),
+ + **Inference**: build up a null reference distribution by repeatly permuting the group labels and
+   recomputing gene and set scores for each permutation.
+
+In <a href='./Example0.R'>Example0.R</a> we examine sequential and parallel implementations for 
+computing the gene-scores. 
+  
 ### Do you need to parallelize? 
 When thinking of parallelizing some portion of a program it is important to remember that 
 parallelism is not magic. There is some computational overhead involved in splitting the task, 
-initializing child processes, comunicating data, and coallating results.  
+initializing child processes, communicating data, and coallating results.  For this reason, there
+is usually little to be gained in parallelizing already fast computations (less than a second) as
+the overhead may outweigh the increase in time.  
+
+At the same time, the maximum impact of parallelism is generally the sequential walltime divided
+by the number of cores available and, in many cases, the actual impact will be even less.
+As such, very long running programs may need require reconcieving the algorithm, implentation, or purpose in
+order to be computationally feasible even with parallelism.
+
+An exception to this idea of linear improvement in runtime with the number of available cores can occur when
+the overall runtime is dominated by rare but long running sub-processes. In these cases, well designed parallelism
+can lead to substantial improvement by repeatedly re-using cores not occupied by the long-running sub-process.
 
 ## Parallel computing with doParallel and foreach
 
 ## Random numbers and parallel computing
 
-Many statistical and machine learning applications rely on pseudo-random numbers for thinks like  
+Many statistical and machine learning applications rely on pseudo-random numbers for things like  
 sampling from distributions and stochastic optimization. When child processes are spawned to compute
-
+various 
 
 For more details, see the doRNG <a href='https://cran.r-project.org/web/packages/doRNG/vignettes/doRNG.pdf'>vignette</a>.
 
