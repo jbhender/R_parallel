@@ -2,7 +2,15 @@
 ## CSAR Workshop, August 9, 2017 ##
 ## James Henderson, PhD          ##
 
+# set directory #
 setwd('~/R_parallel')
+
+# load library #
+library(parallel)
+
+# point to personal pkg library if needed #
+.libPaths('~/Rlib')
+
 #### Example 2: permutation tests for gene set analysis using foreach ####
 
 ##### !! This code is all taken from example 1 !! #####
@@ -47,12 +55,12 @@ doPermute_seq = function(sets,sampleMatrix,G1size){
   sapply(sets,setscore,gs=gs)
 }
 
-doPermute_par = function(sets,sampleMatrix,G1size){
+doPermute_par = function(sets,sampleMatrix,G1size,mc.cores=2){
   G1 = sample(ncol(sampleMatrix),G1size,replace=F)
   G2 = {1:ncol(sampleMatrix)}[-G1]
   
-  genescoresParallel(sampleMatrix,G1,G2)
-  unlist(mclapply(sets,setscore,gs=gs))
+  genescoresParallel(sampleMatrix,G1,G2,mc.cores=mc.cores)
+  unlist(mclapply(sets,setscore,gs=gs,mc.cores=mc.cores))
 }
 
 # Compute observed set scores
@@ -62,37 +70,72 @@ scores_obs = sapply(c6.ind,setscore,gs=gs)
 ##### !! End code taken from example 1 !! #####
 
 ## Example 2: run permutations in parallel using foreach ##
-nPermute = 10
+nPermute = 40
 
 # load doParallel library also loads foreach #
 library(doParallel)
 
 # set up a cluster
-nCores = 2
-cl = makeCluster(2)
+nCores = 8
+cl = makeCluster(nCores)
+
+# register the parallel backend
 registerDoParallel(cl)
 
+# Set path to personal library on all child processes
+clusterEvalQ(cl,.libPaths('~/Rlib'))
+
+cat('Starting run 1 ...\n')
 # compute in parallel, return as list #
 tm1 = system.time({
   scores_perm_1 = foreach(n=1:nPermute) %dopar% {
     doPermute_seq(c6.ind,YaleTNBC,length(AA))
   }
 })
-tm1
 
-class(score_perm_1)
-length(scores_perm_1[[1]])
+# print information about run 1
+cat("Results 1: \n")
+cat("\tTime:\n") 
+print(tm1)
+cat('\tclass(scores_perm_1):',class(scores_perm_1),'\n')
+cat('\tdim(scores_perm_1):',dim(scores_perm_1),'\n') 
 
 # compute in parallel return as set by permuation matrix
+cat('Starting run 2 ...\n')
 tm2 = system.time({
   scores_perm_2 = foreach(n=1:nPermute,.combine='cbind') %dopar% {
     doPermute_seq(c6.ind,YaleTNBC,length(AA))
   }
 })
-tm2
 
-class(scores_perm_2)
-dim(scores_perm_2)
+cat("Results 2: \n")
+cat("\tTime:\n")
+print(tm2)
+cat('\tclass(scores_perm_2):',class(scores_perm_2),'\n')
+cat('\tdim(scores_perm_2):',dim(scores_perm_2),'\n')
 
-# histogram of p-values #
-hist(apply(abs(scores_perm_2) > abs(scores_obs),1,mean),main='p-values')
+## shut down the cluster after use ##
+cat('Shut down cluster.\\n')
+stopCluster(cl)
+
+# p-values #
+p = apply(abs(scores_perm_2) > abs(scores_obs),1,mean)
+
+## set up a new cluster ##
+cat('Create new cluster.\n\n')
+cl = makeCluster(8)
+registerDoParallel(cl)
+clusterEvalQ(cl,.libPaths('~/Rlib'))
+
+cat('Starting run 3 ...\n')
+tm3 = system.time({
+  scores_perm_3 = foreach(n=1:nPermute,.combine='cbind',.packages='parallel') %dopar% {
+   doPermute_par(c6.ind,YaleTNBC,length(AA),mc.cores=2)
+}
+})
+
+cat("Results 3: \n")
+cat("\tTime:\n")
+print(tm3)
+cat('\tclass(scores_perm_3):',class(scores_perm_3),'\n')
+cat('\tdim(scores_perm_3):',dim(scores_perm_3),'\n') 
