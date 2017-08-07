@@ -40,7 +40,11 @@ version 2.14.0. We will
 Long running computations are also commonly run on specialized, multiuser servers. For instance,
 here at UM researchers have access to the Statistics & Computation Service
 <a href='http://www.itcs.umich.edu/scs/'>(SCS)</a> run by ITS. You can access these servers using
-`ssh` from a terminal applicaton.
+`ssh` from a terminal applicaton, i.e.:
+
+```
+ssh luigi.dsc.umich.edu
+```
 
 ### Do you need to parallelize? 
 When thinking of parallelizing some portion of a program it is important to remember that 
