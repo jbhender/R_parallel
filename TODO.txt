@@ -5,6 +5,7 @@ To Do:
 + Add resources/links section at end.
 + Write some exercises.
 + Make sure all examples are linked in readme.
++ Spell check!
 
 + Add explicit chunking to examples?
 
