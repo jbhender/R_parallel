@@ -82,8 +82,9 @@ results = mclapply(myList,myFunc)
 As a running example, we will consider permutation tests for gene set enrichment analysis.
 Such analyses are used to understand large-scale sequencing experiments in terms of sets of functionally
 related and possibly differentially expressed genes. For data we will use a cohort of Triple Negative Breast Cancers
-consisting of two racial groups, African Americans (AA) and American of European ancestry (EA). The data come from:
-<a href=''>here</a> and is named `YaleTNBC.Rdata' in this repository. 
+consisting of two racial groups, African Americans (AA) and American of European ancestry (EA). 
+The data originally come from
+<a href='https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE46581'>here</a> and is named `YaleTNBC.Rdata' in this repository. 
 
 At a high level, the basic steps of the analysis are:
 
@@ -92,8 +93,8 @@ At a high level, the basic steps of the analysis are:
  + **Inference**: build up a null reference distribution by repeatly permuting the group labels and
    recomputing gene and set scores for each permutation.
 
-In <a href='./Example0.R'>Example0.R</a> we examine sequential and parallel implementations for 
-computing the gene-scores. 
+In <a href='./Example0.R'>Example 0</a> we examine sequential and parallel implementations for 
+computing the genescores. 
   
 ### Do you need to parallelize? 
 When thinking of parallelizing some portion of a program it is important to remember that 
@@ -117,7 +118,14 @@ can lead to substantial improvement by repeatedly re-using cores not occupied by
 
 Many statistical and machine learning applications rely on pseudo-random numbers for things like  
 sampling from distributions and stochastic optimization. When child processes are spawned to compute
-various 
+in parallel, care needs to be taken to ensure random number streams behave as expected. This is particulary true
+for bootstrap inference, Monte Carlo simulations, and other applications where it is important that 
+iterations are independent.  Care is also needed to ensure results can be reliably reproduced using `set.seed()`.
+
+As seen in <a href='./Example1.R'>Example 1<\a> this can be acheived in the multicore approach typifed by calls
+to __mclapply__ by instructing R to use "L'Ecuyer-CMRG" for random number generation by calling `RNGkind("L'Ecuyer-CMRG")`.
+
+In the `foreach` approach this can be handled by using the **doRNG** library and replacing `%dopar%` calls with `%dorng%`.
 
 For more details, see the doRNG <a href='https://cran.r-project.org/web/packages/doRNG/vignettes/doRNG.pdf'>vignette</a>.
 
