@@ -87,3 +87,50 @@ foreach(n=1:2,.combine='union') %dopar% {
 }
 ls()
 
+## error handling ##
+
+# default is to stop
+foreach(n=1:100,.errorhandling='stop') %dopar% {
+  if(n %% 10 == 0) {
+    stop('Message about an error')
+  } else{
+    n
+  }
+}
+
+# pass can be useful for debugging
+out = 
+foreach(n=1:100,.errorhandling = 'pass') %dopar% {
+  if(n %% 10 == 0) {
+    stop('Message about an error')
+  } else{
+    n
+  }
+}
+class(out[[10]])
+out[[10]]
+# Get all errors
+out[sapply(out,function(x) 'error' %in% class(x))]
+
+# remove sometimes useful for niche problems
+out = 
+  foreach(n=1:100,.errorhandling = 'remove',.combine='c') %dopar% {
+    if(n %% 10 == 0) {
+      stop('Message about an error')
+    } else{
+      n
+    }
+  }
+
+# remove errors
+out = 
+  foreach(n=1:100,.errorhandling = 'remove',.combine='c') %dopar% {
+  if(n %% 10 == 0) {
+    stop('Message about an error')
+  } else{
+    n
+  }
+}
+length(out)
+out[1:20]
+sum({out %% 10} == 0)
