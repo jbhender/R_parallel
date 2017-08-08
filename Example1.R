@@ -3,6 +3,8 @@
 ## James Henderson, PhD          ##
 
 setwd('~/R_parallel')
+library(parallel)
+
 #### Example 1: permutation tests for gene set analysis ####
 
 ## load data ##
@@ -22,9 +24,10 @@ t1.0 = system.time({
 })
 
 ## a parallel version of genescores ##
-genescoresParallel = function(Mat,G1,G2,
-                              mc.cores=2,mc.preschedule=TRUE){
-  mclapply(1:nrow(Mat),function(row) t.test(Mat[row,G1],Mat[row,G2])$statistic,mc.cores=mc.cores,mc.preschedule = mc.preschedule)
+genescoresParallel = function(Mat,G1,G2,mc.cores=2,mc.preschedule=TRUE){
+  mclapply(1:nrow(Mat),function(row) 
+   t.test(Mat[row,G1],Mat[row,G2])$statistic,mc.cores=mc.cores,mc.preschedule = mc.preschedule
+  )
 }
 
 t1.1 = system.time({
@@ -81,11 +84,15 @@ doPermute_seq = function(sets,sampleMatrix,G1size){
   sapply(sets,setscore,gs=gs)
 }
 
+# sequentially create permutations, compute genescores and set scores in parallel
 doPermute_par = function(sets,sampleMatrix,G1size){
   G1 = sample(ncol(sampleMatrix),G1size,replace=F)
   G2 = {1:ncol(sampleMatrix)}[-G1]
   
-  genescoresParallel(sampleMatrix,G1,G2)
+  ## parallel computation of gene scores
+  gs = genescoresParallel(sampleMatrix,G1,G2)
+
+  ## parallel computaiton of set scores
   unlist(mclapply(sets,setscore,gs=gs))
 }
 
@@ -103,18 +110,21 @@ rbind(t3.0,t3.1)
 ## Example 1d: Run permutations in parallel ##
 nPermute = 10
 
+# All Sequential 
 set.seed(89)
 t4.0 = system.time({
   scores_perm_seq = mclapply(1:nPermute,function(i) 
     doPermute_seq(c6.ind,YaleTNBC,length(AA)))
 })
 
+# In parallel
 set.seed(89)
 t4.1 = system.time({
   scores_perm_par = mclapply(1:nPermute,function(i) 
     doPermute_par(c6.ind,YaleTNBC,length(AA)))
 })
 
+# In parallel with 4 cores specified
 set.seed(89)
 t4.2 = system.time({
   scores_perm_seq2 = mclapply(1:nPermute,function(i) 
@@ -135,7 +145,7 @@ t4.0_b = system.time({
 all.equal(scores_perm_seq_b,scores_perm_seq)
 
 ## Care must be taken with random number generation when computing in parallel!
-?mcparallel
+# see ?mcparallel
 
 ## Reproducible results 
 # Check the random number stream #
