@@ -24,7 +24,7 @@ these by considering both the sturcture of the tasks to be performed and the par
 As a word of cauation, this workshop is built around my own experience as a statistician and comes with no
 guarantee of general applicability.
 
-## Multicore computing using the parallel package
+## Multicore computing using the **parallel** package
 
 Most modern computers, including laptops and desktops, come with multiple processors or cores -
 the distinction is not important for our purposes but see 
@@ -39,7 +39,7 @@ version 2.14.0. By default, the __parallel__ package achieves parallelism by
 available on Unix-like operating systems, i.e. Linux and Mac, but not Windows. In the image below,
 we see a parent process with three forked children.  
 
-Image Here 
+![](./Multicore_Image.jpeg)
 
 ### Multicore servers at UM
 Long running computations are also commonly run on specialized, multiuser servers. For instance,
