@@ -213,5 +213,5 @@ For more details, see the doRNG <a href='https://cran.r-project.org/web/packages
 ## Additional resources
   + <a href='https://cran.r-project.org/web/views/HighPerformanceComputing.html'>High-Performance and Parallel Computing with R<\a> - The central clearing space for all things HPC related in R.
   + <a href='http://arc-ts.umich.edu/flux-user-guide/'>Flux User Guide</a> - Flux is a computing cluster for high performance (including parallel) computing here at UM.
-  + <a href='https://cran.r-project.org/web/packages/future/index.html'>future<\a> R package **future** for not necesarilly parallel asynchronous / concurrent compuation in R.
+  + <a href='https://cran.r-project.org/web/packages/future/index.html'>future</a> R package **future** for not necesarilly parallel asynchronous / concurrent compuation in R.
  
