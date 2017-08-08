@@ -1,11 +1,7 @@
 To Do:
 
-+ Add outline text to foreach/dopar section
-+ Add image for child workers / maybe for cluster as well
 + Add resources/links section at end.
 + Write some exercises.
-+ Make sure all examples are linked in readme.
-+ Spell check!
 
 + Add explicit chunking to examples?
-
++ Review Example1 on local machines.
