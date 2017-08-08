@@ -3,7 +3,8 @@
 ## James Henderson, PhD          ##
 
 setwd('~/R_parallel')
-#### Example 0: computing a long vector of means ####
+
+#### Example 0: computing a differencec in means ####
 
 ## load data ##
 foo = load('./YaleTNBC.Rdata')
