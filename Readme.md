@@ -185,7 +185,7 @@ Using __%do%__ instead would lead to sequential computation by the primary proce
 In <a href='./Example2.R'>Example 2</a> we revisit the earlier permutation tests 
 using __foreach__ and __%dopar%__ for parallelization. 
 
-In <a href='./Example2.R'>Example 3</a> we see how to create reproducible results
+In <a href='./Example3.R'>Example 3</a> we see how to create reproducible results
 when using random number generation within __foreach__ expressions using the 
 __%dorng%__ operator from package **doRNG**.
 
@@ -200,13 +200,12 @@ in parallel, care needs to be taken to ensure random number streams behave as ex
 for bootstrap inference, Monte Carlo simulations, and other applications where it is important that 
 iterations are independent.  Care is also needed to ensure results can be reliably reproduced using `set.seed()`.
 
-As seen in <a href='./Example1.R'>Example 1<\a> this can be achieved in the multicore approach typified by calls
+As seen in <a href='./Example1.R'>Example 1</a> this can be achieved in the multicore approach typified by calls
 to __mclapply__ by instructing R to use "L'Ecuyer-CMRG" for random number generation by calling `RNGkind("L'Ecuyer-CMRG")`.
 
 In the `foreach` approach this can be handled by using the **doRNG** library and replacing `%dopar%` calls with `%dorng%`.
 
 For more details, see the doRNG <a href='https://cran.r-project.org/web/packages/doRNG/vignettes/doRNG.pdf'>vignette</a>.
-
 
 ## Summary 
 
