@@ -163,13 +163,13 @@ scores_perm_5a = foreach(n=1:4,.combine='cbind',.packages='parallel') %dopar% {
   tm = system.time({doPermute_par(c6.ind,YaleTNBC,length(AA),mc.cores=2)})
   cat('Loop',n,tm,'\n')
 }
-cat('Class of scores_perm_5a:',class(score_perm_5a))
+cat('Class of scores_perm_5a:',class(scores_perm_5a),'\n')
 
 cat('Run 5b ...\n')
-scores_perm_5 = foreach(n=1:4,.combine='cbind',.packages='parallel') %dopar% { 
+scores_perm_5b = foreach(n=1:4,.packages='parallel') %dopar% { 
   tm = system.time({scores=doPermute_par(c6.ind,YaleTNBC,length(AA),mc.cores=2)})
   list(scores=scores,time=tm)
 }
 
-cat(names(scores_perm_5a[[1]]),'\n')
+cat(names(scores_perm_5b[[1]]),'\n')
 stopCluster(cl)
