@@ -182,6 +182,7 @@ as a value.
 In the examples above, the __%dopar%__ operator is used to execute the code in parallel.
 Using __%do%__ instead would lead to sequential computation by the primary process.
 
+### Examples 
 In <a href='./Example2.R'>Example 2</a> we revisit the earlier permutation tests 
 using __foreach__ and __%dopar%__ for parallelization. 
 
@@ -205,13 +206,21 @@ to __mclapply__ by instructing R to use "L'Ecuyer-CMRG" for random number genera
 
 In the `foreach` approach this can be handled by using the **doRNG** library and replacing `%dopar%` calls with `%dorng%`.
 
-For more details, see the doRNG <a href='https://cran.r-project.org/web/packages/doRNG/vignettes/doRNG.pdf'>vignette</a>.
+For more details see the doRNG <a href='https://cran.r-project.org/web/packages/doRNG/vignettes/doRNG.pdf'>vignette</a>.
 
 ## Summary 
 
+The **parallel**, **doParallel**, and **foreach** packages greatly facilitate parallel computing in R.
+When used appropriately, performing computations in parallel can reduce the wait time needed to
+obtain results and make the overall research process more efficient. When deciding whether and how
+to parallelize it is important to keep in mind the amount and archictecture of available computing
+resources.  
 
 ## Additional resources
-  + <a href='https://cran.r-project.org/web/views/HighPerformanceComputing.html'>High-Performance and Parallel Computing with R<\a> - The central clearing space for all things HPC related in R.
-  + <a href='http://arc-ts.umich.edu/flux-user-guide/'>Flux User Guide</a> - Flux is a computing cluster for high performance (including parallel) computing here at UM.
-  + <a href='https://cran.r-project.org/web/packages/future/index.html'>future</a> R package **future** for not necesarilly parallel asynchronous / concurrent compuation in R.
+  + <a href='https://cran.r-project.org/web/views/HighPerformanceComputing.html'>High-Performance and Parallel Computing with R</a> - The central clearing space for all things HPC related in R.
+  + <a href='http://arc-ts.umich.edu/flux-user-guide/'>Flux User Guide</a> - 
+  Flux is a shared high peformance computing cluster available to all researchers 
+  at UM. 
+  + <a href='https://cran.r-project.org/web/packages/future/index.html'>future</a>-
+  The R package **future** for asynchronous or concurrent computation in R.
  
