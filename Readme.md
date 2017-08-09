@@ -89,6 +89,8 @@ consisting of two racial groups, African Americans (AA) and European Americans (
 The data originally come from
 <a href='https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE46581'>here</a> and is named `YaleTNBC.Rdata' in this repository. 
 
+The gene sets in 'c6.unsigned.Rdata' come from <a href='http://software.broadinstitute.org/gsea/msigdb/collections.jsp'>MSigDB</a>.
+
 At a high level, the basic steps of the analysis are:
 
  + **Gene scores**: score each gene using a univariate statistic  (we'll use the t-statistic),
