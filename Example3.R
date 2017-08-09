@@ -5,12 +5,14 @@
 # set directory #
 setwd('~/R_parallel')
 
-# load library #
+# load libraries #
 library(parallel)
-library(doRNG)
 
 # point to personal pkg library if needed #
 .libPaths('~/Rlib')
+
+library(doParallel)
+library(doRNG)
 
 #### Example 3: reproducible permutation tests for gene set analysis using foreach 
 #               and doRNG ####
@@ -37,9 +39,12 @@ genescores = function(Mat,G1,G2){
 }
 
 # a parallel version of genescores #
-genescoresParallel = function(Mat,G1,G2,
-                              mc.cores=2,mc.preschedule=TRUE){
-  mclapply(1:nrow(Mat),function(row) t.test(Mat[row,G1],Mat[row,G2])$statistic,mc.cores=mc.cores,mc.preschedule = mc.preschedule)
+genescoresParallel = function(Mat,G1,G2,mc.cores=2,mc.preschedule=TRUE){
+  unlist(
+   mclapply(1:nrow(Mat),function(row){t.test(Mat[row,G1],Mat[row,G2])$statistic},
+	     mc.cores=mc.cores,mc.preschedule = mc.preschedule
+           )
+  )
 }
 
 ## compute set scores #
@@ -61,8 +66,8 @@ doPermute_par = function(sets,sampleMatrix,G1size,mc.cores=2){
   G1 = sample(ncol(sampleMatrix),G1size,replace=F)
   G2 = {1:ncol(sampleMatrix)}[-G1]
   
-  genescoresParallel(sampleMatrix,G1,G2,mc.cores=mc.cores)
-  unlist(mclapply(sets,setscore,gs=gs,mc.cores=mc.cores))
+  gs = genescoresParallel(sampleMatrix,G1,G2,mc.cores=mc.cores)
+  sapply(sets,setscore,gs=gs)
 }
 
 # Compute observed set scores
@@ -71,11 +76,8 @@ scores_obs = sapply(c6.ind,setscore,gs=gs)
 
 ##### !! End code taken from example 1 !! #####
 
-## Example 2: run permutations in parallel using foreach ##
+## Example 3: run permutations in parallel using foreach ##
 nPermute = 40
-
-# load doParallel library also loads foreach #
-library(doParallel)
 
 # set up a cluster
 nCores = 8
@@ -133,7 +135,7 @@ cat('# of numeric disagreements =',sum(sp1 != scores_perm_2),'\n')
 cat('Create new cluster.\n\n')
 cl = makeCluster(8)
 registerDoParallel(cl)
-clusterEvalQ(cl,.libPaths('~/Rlib'))
+libs = clusterEvalQ(cl,.libPaths('~/Rlib'))
 
 cat('Starting run 3 ...\n')
 set.seed(89)
@@ -157,16 +159,17 @@ cat(all.equal(scores_perm_3,scores_perm_4),'\n')
 ## Be careful that parallel expression returns desired value
 
 cat('Run 5a ...\n')
-scores_perm_5 = foreach(n=1:4,.combine='cbind',.packages='parallel') %dopar% {
-  tm = system.time(doPermute_par(c6.ind,YaleTNBC,length(AA),mc.cores=2))
+scores_perm_5a = foreach(n=1:4,.combine='cbind',.packages='parallel') %dopar% {
+  tm = system.time({doPermute_par(c6.ind,YaleTNBC,length(AA),mc.cores=2)})
   cat('Loop',n,tm,'\n')
 }
+cat('Class of scores_perm_5a:',class(scores_perm_5a),'\n')
 
 cat('Run 5b ...\n')
-scores_perm_5 = foreach(n=1:4,.combine='cbind',.packages='parallel') %dopar% { 
-  tm = system.time(scores=doPermute_par(c6.ind,YaleTNBC,length(AA),mc.cores=2))
+scores_perm_5b = foreach(n=1:4,.packages='parallel') %dopar% { 
+  tm = system.time({scores=doPermute_par(c6.ind,YaleTNBC,length(AA),mc.cores=2)})
   list(scores=scores,time=tm)
 }
 
-cat(names(scores_perm_5[[1]]),'\n')
+cat(names(scores_perm_5b[[1]]),'\n')
 stopCluster(cl)
