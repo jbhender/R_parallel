@@ -35,9 +35,13 @@ genescores = function(Mat,G1,G2){
 }
 
 # a parallel version of genescores #
-genescoresParallel = function(Mat,G1,G2,
-                              mc.cores=2,mc.preschedule=TRUE){
-  mclapply(1:nrow(Mat),function(row) t.test(Mat[row,G1],Mat[row,G2])$statistic,mc.cores=mc.cores,mc.preschedule = mc.preschedule)
+genescoresParallel = function(Mat,G1,G2, mc.cores=2,mc.preschedule=TRUE){
+  unlist(
+   mclapply(1:nrow(Mat),function(row){t.test(Mat[row,G1],Mat[row,G2])$statistic},
+	   mc.cores=mc.cores,mc.preschedule = mc.preschedule
+	   )
+  )
+
 }
 
 ## compute set scores #
@@ -59,8 +63,8 @@ doPermute_par = function(sets,sampleMatrix,G1size,mc.cores=2){
   G1 = sample(ncol(sampleMatrix),G1size,replace=F)
   G2 = {1:ncol(sampleMatrix)}[-G1]
   
-  genescoresParallel(sampleMatrix,G1,G2,mc.cores=mc.cores)
-  unlist(mclapply(sets,setscore,gs=gs,mc.cores=mc.cores))
+  gs = genescoresParallel(sampleMatrix,G1,G2,mc.cores=mc.cores)
+  sapply(sets,setscore,gs=gs)
 }
 
 # Compute observed set scores
@@ -125,7 +129,7 @@ p = apply(abs(scores_perm_2) > abs(scores_obs),1,mean)
 cat('Create new cluster.\n\n')
 cl = makeCluster(8)
 registerDoParallel(cl)
-clusterEvalQ(cl,.libPaths('~/Rlib'))
+libs = clusterEvalQ(cl,.libPaths('~/Rlib'))
 
 cat('Starting run 3 ...\n')
 tm3 = system.time({
@@ -140,6 +144,10 @@ print(tm3)
 cat('\tclass(scores_perm_3):',class(scores_perm_3),'\n')
 cat('\tdim(scores_perm_3):',dim(scores_perm_3),'\n') 
 
+cat("Compare times:\n")
+print(rbind(tm1,tm2,tm3))
+
 cat('All equal: \n')
 cat(all.equal(scores_perm_2,scores_perm_3),'\n')
+
 
