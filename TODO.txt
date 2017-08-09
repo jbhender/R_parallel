@@ -1,7 +1,4 @@
 To Do:
 
-+ Add resources/links section at end.
 + Write some exercises.
-
 + Add explicit chunking to examples?
-+ Review Example1 on local machines.
