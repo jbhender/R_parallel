@@ -10,6 +10,7 @@ library(parallel)
 
 # point to personal pkg library if needed #
 .libPaths('~/Rlib')
+library(doParallel)
 
 #### Example 2: permutation tests for gene set analysis using foreach ####
 
@@ -76,9 +77,6 @@ scores_obs = sapply(c6.ind,setscore,gs=gs)
 ## Example 2: run permutations in parallel using foreach ##
 nPermute = 40
 
-# load doParallel library also loads foreach #
-library(doParallel)
-
 # set up a cluster
 nCores = 8
 cl = makeCluster(nCores)
@@ -119,7 +117,7 @@ cat('\tclass(scores_perm_2):',class(scores_perm_2),'\n')
 cat('\tdim(scores_perm_2):',dim(scores_perm_2),'\n')
 
 ## shut down the cluster after use ##
-cat('Shut down cluster.\\n')
+cat('Shut down cluster.\n\n')
 stopCluster(cl)
 
 # p-values #
